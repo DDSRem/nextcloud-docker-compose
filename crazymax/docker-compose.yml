@@ -16,6 +16,8 @@ services:
   redis:
     image: redis:6-alpine
     container_name: nextcloud_redis
+    volumes:
+      - "./redis:/data"
     environment:
       - "TZ"
     restart: always
