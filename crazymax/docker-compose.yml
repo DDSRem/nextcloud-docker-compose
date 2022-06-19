@@ -1,7 +1,8 @@
 version: "3.2"
 
 services:
-  db:
+## mariadb数据库
+  db:                                        
     image: mariadb:10.5
     container_name: nextcloud_db
     volumes:
@@ -12,7 +13,7 @@ services:
       - "MYSQL_USER"
       - "MYSQL_PASSWORD"
     restart: always
-
+## redis缓存数据库
   redis:
     image: redis:6-alpine
     container_name: nextcloud_redis
@@ -21,7 +22,10 @@ services:
     environment:
       - "TZ"
     restart: always
-
+    command: redis-server --requirepass 'nextcloud'
+    expose:
+     - "6379"
+## msmtpd邮件服务
   msmtpd:
     image: crazymax/msmtpd:latest
     container_name: nextcloud_msmtpd
@@ -30,7 +34,7 @@ services:
     environment:
       - "TZ"
     restart: always
-
+## nextcloud主体
   nextcloud:
     image: crazymax/nextcloud:latest
     container_name: nextcloud
@@ -56,7 +60,7 @@ services:
       - "DB_USER=${MYSQL_USER}"
       - "DB_PASSWORD=${MYSQL_PASSWORD}"
     restart: always
-
+## cron模式运行
   cron:
     image: crazymax/nextcloud:latest
     container_name: nextcloud_cron
@@ -78,7 +82,7 @@ services:
       - "SIDECAR_CRON=1"
       - "CRON_PERIOD=*/5 * * * *"
     restart: always
-
+## 预览生成器
   previewgen:
     image: crazymax/nextcloud:latest
     container_name: nextcloud_previewgen
@@ -100,7 +104,7 @@ services:
       - "SIDECAR_PREVIEWGEN=1"
       - "PREVIEWGEN_PERIOD=0 * * * *"
     restart: always
-
+## 更新服务
   news_updater:
     image: crazymax/nextcloud:latest
     container_name: nextcloud_news_updater
